@@ -1,0 +1,11 @@
+# TraceLens - Browser & App Artifact Timeline Visualizer
+# First Year Engineering Project Dependencies
+
+# Data visualization charts (Hourly activity, Category breakdown, Top domains)
+matplotlib>=3.5.0
+
+# Note: All other components use the Python Standard Library:
+# - tkinter & ttk (Built-in Desktop GUI framework)
+# - sqlite3 (Built-in SQLite database parser for Chrome/Edge history)
+# - csv & html (Built-in report generation)
+# - datetime & urllib (Built-in timestamp conversion & URL parsing)
