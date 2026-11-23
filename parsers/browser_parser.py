@@ -83,24 +83,39 @@ def extract_search_query(url):
 
 def get_default_history_paths():
     """
-    Returns default file paths for Chrome and Edge history on Windows.
-    Uses environment variable %LOCALAPPDATA%.
+    Returns default file paths for Chrome, Edge, and Brave history.
+    Cross-platform support for both Windows and macOS.
     """
-    local_app_data = os.environ.get("LOCALAPPDATA", "")
-    if not local_app_data:
-        return {}
+    paths = {}
+    home = os.path.expanduser("~")
 
-    paths = {
-        "Google Chrome": os.path.join(
+    # 1. Windows Paths
+    local_app_data = os.environ.get("LOCALAPPDATA", "")
+    if local_app_data:
+        paths["Google Chrome"] = os.path.join(
             local_app_data, "Google", "Chrome", "User Data", "Default", "History"
-        ),
-        "Microsoft Edge": os.path.join(
+        )
+        paths["Microsoft Edge"] = os.path.join(
             local_app_data, "Microsoft", "Edge", "User Data", "Default", "History"
-        ),
-        "Brave Browser": os.path.join(
+        )
+        paths["Brave Browser"] = os.path.join(
             local_app_data, "BraveSoftware", "Brave-Browser", "User Data", "Default", "History"
-        ),
-    }
+        )
+
+    # 2. macOS Paths
+    mac_app_support = os.path.join(home, "Library", "Application Support")
+    if os.path.exists(mac_app_support):
+        mac_chrome = os.path.join(mac_app_support, "Google", "Chrome", "Default", "History")
+        mac_edge = os.path.join(mac_app_support, "Microsoft Edge", "Default", "History")
+        mac_brave = os.path.join(mac_app_support, "BraveSoftware", "Brave-Browser", "Default", "History")
+
+        if os.path.exists(mac_chrome):
+            paths["Google Chrome (macOS)"] = mac_chrome
+        if os.path.exists(mac_edge):
+            paths["Microsoft Edge (macOS)"] = mac_edge
+        if os.path.exists(mac_brave):
+            paths["Brave Browser (macOS)"] = mac_brave
+
     return paths
 
 

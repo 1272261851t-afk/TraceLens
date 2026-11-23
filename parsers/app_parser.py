@@ -102,13 +102,10 @@ def parse_windows_recent_artifacts(limit=300):
 def parse_recent_downloads(limit=100):
     """
     Scans the user's Downloads folder for recently saved files.
+    Works seamlessly on both Windows and macOS.
     """
     artifacts = []
-    user_profile = os.environ.get("USERPROFILE", "")
-    if not user_profile:
-        return artifacts
-
-    downloads_dir = os.path.join(user_profile, "Downloads")
+    downloads_dir = os.path.expanduser("~/Downloads")
     if not os.path.exists(downloads_dir):
         return artifacts
 
