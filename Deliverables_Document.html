@@ -271,10 +271,22 @@
                     <td>Safely clones SQLite DB, queries <code>urls</code> & <code>downloads</code>, and normalizes rows.</td>
                 </tr>
                 <tr>
+                    <td><code>parse_active_browser_sockets()</code></td>
+                    <td><code>parsers/incognito_parser.py</code><br><span class="badge badge-blue">Janhavi & Tanishq</span></td>
+                    <td><code>browser_procs</code>, <code>limit</code></td>
+                    <td>Inspects live OS TCP/UDP kernel sockets, maps to browser PIDs, and resolves domains via Reverse DNS for active Incognito tabs.</td>
+                </tr>
+                <tr>
                     <td><code>parse_dns_cache_traces()</code></td>
                     <td><code>parsers/incognito_parser.py</code><br><span class="badge badge-blue">Janhavi Dahiwale</span></td>
                     <td><code>limit</code>: integer</td>
                     <td>Extracts Incognito / InPrivate session traces from OS DNS resolver cache memory.</td>
+                </tr>
+                <tr>
+                    <td><code>parse_incognito_downloads()</code></td>
+                    <td><code>parsers/incognito_parser.py</code><br><span class="badge badge-blue">Janhavi Dahiwale</span></td>
+                    <td><code>limit</code>: integer</td>
+                    <td>Scans persistent physical file downloads retained on disk from private browsing sessions.</td>
                 </tr>
                 <tr>
                     <td><code>get_file_type_category(filename)</code></td>
@@ -292,7 +304,7 @@
                     <td><code>generate_forensic_case_artifacts()</code></td>
                     <td><code>parsers/sample_generator.py</code><br><span class="badge badge-green">OM & Tanishq</span></td>
                     <td>None</td>
-                    <td>Synthesizes 16 interconnected forensic events modeling an incident case study.</td>
+                    <td>Synthesizes 20 interconnected forensic events modeling an incident case study including private browsing.</td>
                 </tr>
                 <tr>
                     <td><code>filter_artifacts(...)</code></td>

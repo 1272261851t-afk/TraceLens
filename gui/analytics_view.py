@@ -61,11 +61,12 @@ def show_analytics_window(parent, stats):
     )
     title.pack(side=tk.LEFT)
 
+    incog_count = stats.get("incognito_count", 0)
     subtitle = tk.Label(
         header,
-        text=f"Earliest: {stats.get('earliest_time')} | Latest: {stats.get('latest_time')}",
+        text=f"Span: {stats.get('earliest_time')} → {stats.get('latest_time')} | 🕵️ Incognito/Private Traces: {incog_count}",
         font=("Segoe UI", 9),
-        fg="#94a3b8",
+        fg="#e9d5ff" if incog_count > 0 else "#94a3b8",
         bg="#1e293b"
     )
     subtitle.pack(side=tk.RIGHT)

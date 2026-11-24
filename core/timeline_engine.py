@@ -88,7 +88,10 @@ class TimelineEngine:
                 a for a in results
                 if "incognito" in a.get("category", "").lower()
                 or "incognito" in a.get("source", "").lower()
+                or "incognito" in a.get("extra", "").lower()
                 or "inprivate" in a.get("source", "").lower()
+                or "inprivate" in a.get("category", "").lower()
+                or "inprivate" in a.get("extra", "").lower()
             ]
 
         # 1. Date Range Filtering
@@ -178,8 +181,16 @@ class TimelineEngine:
 
         top_domains = domain_counter.most_common(8)
 
+        incognito_count = sum(
+            1 for a in data
+            if "incognito" in a.get("category", "").lower()
+            or "incognito" in a.get("source", "").lower()
+            or "inprivate" in a.get("source", "").lower()
+        )
+
         stats = {
             "total_count": total_count,
+            "incognito_count": incognito_count,
             "earliest_time": earliest_time.strftime("%Y-%m-%d %H:%M:%S") if earliest_time else "N/A",
             "latest_time": latest_time.strftime("%Y-%m-%d %H:%M:%S") if latest_time else "N/A",
             "category_counts": dict(category_counter),

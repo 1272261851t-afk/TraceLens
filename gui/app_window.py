@@ -258,7 +258,15 @@ class TraceLensApp(tk.Tk):
             activeforeground="#581c87",
             font=("Segoe UI", 9, "bold")
         )
-        incognito_chk.pack(side=tk.LEFT, padx=(0, 10))
+        incognito_chk.pack(side=tk.LEFT, padx=(0, 4))
+
+        # Incognito Forensics Methodology Guide button
+        incognito_guide_btn = ttk.Button(
+            filter_frame,
+            text="ℹ️ Methodology",
+            command=self.show_incognito_info
+        )
+        incognito_guide_btn.pack(side=tk.LEFT, padx=(0, 10))
 
         # Reset button
         reset_btn = ttk.Button(filter_frame, text="Reset Filters", command=self.reset_filters)
@@ -402,9 +410,20 @@ class TraceLensApp(tk.Tk):
         total_loaded = len(self.engine.raw_artifacts)
         showing = len(artifacts)
         mode_str = "Demo Forensic Case" if self.engine.is_demo_mode else "Live System Data"
-        self.status_var.set(
-            f"Mode: {mode_str} | Displaying {showing} of {total_loaded} events | Double-click row for full details"
-        )
+
+        if self.incognito_only_var.get():
+            if showing > 0:
+                self.status_var.set(
+                    f"🕵️ Incognito Filter: Showing {showing} private session traces (Sockets, DNS, and Downloads) | Mode: {mode_str}"
+                )
+            else:
+                self.status_var.set(
+                    f"🕵️ Incognito Filter: 0 traces found. Tip: Open a site in Incognito and re-scan, or click 'Load Demo Forensic Case'."
+                )
+        else:
+            self.status_var.set(
+                f"Mode: {mode_str} | Displaying {showing} of {total_loaded} events | Double-click row for full details"
+            )
 
     def apply_filters(self):
         """
@@ -500,14 +519,23 @@ class TraceLensApp(tk.Tk):
 
         art = self.engine.filtered_artifacts[idx]
 
+        is_incog = (
+            "incognito" in art.get("category", "").lower()
+            or "incognito" in art.get("source", "").lower()
+            or "inprivate" in art.get("source", "").lower()
+            or "incognito" in art.get("extra", "").lower()
+        )
+
+        header_bg = "#581c87" if is_incog else "#1e3a8a"
+
         # Popup dialog
         detail_win = tk.Toplevel(self)
         detail_win.title(f"Artifact Detail Inspector - Event #{idx + 1}")
-        detail_win.geometry("640x480")
-        detail_win.minsize(500, 350)
+        detail_win.geometry("660x520")
+        detail_win.minsize(500, 380)
         detail_win.configure(bg="#f8fafc")
 
-        header = tk.Frame(detail_win, bg="#1e3a8a", padx=16, pady=12)
+        header = tk.Frame(detail_win, bg=header_bg, padx=16, pady=12)
         header.pack(fill=tk.X)
 
         tk.Label(
@@ -515,11 +543,25 @@ class TraceLensApp(tk.Tk):
             text=f"Artifact: {art.get('category')} ({art.get('source')})",
             font=("Segoe UI", 12, "bold"),
             fg="#ffffff",
-            bg="#1e3a8a"
+            bg=header_bg
         ).pack(anchor="w")
 
         body = tk.Frame(detail_win, bg="#f8fafc", padx=16, pady=14)
         body.pack(fill=tk.BOTH, expand=True)
+
+        if is_incog:
+            banner = tk.Frame(body, bg="#f5d0fe", padx=10, pady=8, highlightbackground="#c084fc", highlightthickness=1)
+            banner.pack(fill=tk.X, pady=(0, 10))
+            tk.Label(
+                banner,
+                text="🕵️ Private Browsing Forensic Artifact (Non-SQLite Trace)\n"
+                     "Chromium does not commit visited private URLs to disk databases. TraceLens recovers "
+                     "this artifact from operating system network sockets, DNS cache, or filesystem persistence.",
+                font=("Segoe UI", 8, "italic"),
+                fg="#581c87",
+                bg="#f5d0fe",
+                justify="left"
+            ).pack(anchor="w")
 
         fields = [
             ("Timestamp", art.get("timestamp", "")),
@@ -611,3 +653,73 @@ class TraceLensApp(tk.Tk):
                 webbrowser.open(file_path)
         except Exception as e:
             messagebox.showerror("Export Failed", f"Could not export HTML Report:\n{e}")
+
+    def show_incognito_info(self):
+        """
+        Displays a structured academic explanation of how private browsing artifacts
+        are forensically recovered from the operating system.
+        """
+        info_win = tk.Toplevel(self)
+        info_win.title("TraceLens - Incognito Forensics Methodology")
+        info_win.geometry("700x540")
+        info_win.minsize(600, 420)
+        info_win.configure(bg="#ffffff")
+
+        header = tk.Frame(info_win, bg="#581c87", padx=18, pady=14)
+        header.pack(fill=tk.X)
+
+        tk.Label(
+            header,
+            text="🕵️ Incognito & Private Browsing Forensic Methodology",
+            font=("Segoe UI", 13, "bold"),
+            fg="#ffffff",
+            bg="#581c87"
+        ).pack(anchor="w")
+        tk.Label(
+            header,
+            text="Scientific & Forensic Principles for 1st Year Engineering Demonstration",
+            font=("Segoe UI", 9),
+            fg="#f5d0fe",
+            bg="#581c87"
+        ).pack(anchor="w", pady=(2, 0))
+
+        content_frame = tk.Frame(info_win, bg="#ffffff", padx=18, pady=14)
+        content_frame.pack(fill=tk.BOTH, expand=True)
+
+        text_widget = tk.Text(content_frame, wrap="word", font=("Segoe UI", 9), bg="#ffffff", relief=tk.FLAT)
+        vsb = ttk.Scrollbar(content_frame, orient=tk.VERTICAL, command=text_widget.yview)
+        text_widget.configure(yscrollcommand=vsb.set)
+        vsb.pack(side=tk.RIGHT, fill=tk.Y)
+        text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        explanation = (
+            "1. Why Browsers Do Not Save History to SQLite in Incognito Mode:\n"
+            "   Chromium (Google Chrome, Microsoft Edge, Brave) and Gecko (Firefox) explicitly isolate "
+            "private sessions in RAM. Visited URLs are never written to the on-disk 'History' SQLite database. "
+            "Therefore, any forensic tool claiming to read SQLite history during private sessions is technically invalid.\n\n"
+            "2. How TraceLens Recovers Evidence from the Host Operating System:\n"
+            "   TraceLens uses multi-vector operating system forensics complying with standard digital forensic principles:\n\n"
+            "   a. Active Network Sockets & QUIC Streams:\n"
+            "      While an incognito tab is open, the OS kernel (Windows/macOS) maintains active TCP and UDP "
+            "connections to remote servers (ports 80, 443). TraceLens enumerates these sockets, maps them to "
+            "browser process IDs (PIDs), and performs Reverse DNS lookups to identify visited domains.\n\n"
+            "   b. Operating System DNS Resolver Cache:\n"
+            "      When resolving domain names, the OS DNS client stores resolved IP addresses in local memory "
+            "(accessible via 'ipconfig /displaydns' or PowerShell 'Get-DnsClientCache').\n\n"
+            "   c. Persistent Download Metadata:\n"
+            "      Files downloaded in Incognito mode are NOT wiped upon browser exit; they remain saved on "
+            "physical storage with file creation and modification timestamps intact.\n\n"
+            "   d. Process Execution Inspection:\n"
+            "      The process management table records command-line switches like '--incognito' or '-inprivate'.\n\n"
+            "3. Key Takeaway for Academic Viva & Evaluation:\n"
+            "   In encrypted HTTPS traffic, the domain name is exposed via DNS, SNI, and IP reverse resolution, "
+            "while the exact URL query path is encrypted. TraceLens forensically reports the accurate, truthful "
+            "domain traces without fabricating inaccessible encrypted data."
+        )
+
+        text_widget.insert(tk.END, explanation)
+        text_widget.configure(state="disabled")
+
+        btn_box = tk.Frame(info_win, bg="#f8fafc", padx=16, pady=10)
+        btn_box.pack(fill=tk.X)
+        ttk.Button(btn_box, text="Close", command=info_win.destroy).pack(side=tk.RIGHT)

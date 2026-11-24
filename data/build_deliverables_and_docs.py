@@ -139,8 +139,10 @@ def generate_word_document():
     p.add_run("Extracted from %LOCALAPPDATA%\\Google\\Chrome\\User Data\\Default\\History and Microsoft Edge equivalent. Contains visit URLs, page titles, visit counts, and download records.\n")
     p.add_run("• Windows OS Recent Shortcuts: ").font.bold = True
     p.add_run("Extracted from %APPDATA%\\Microsoft\\Windows\\Recent (.lnk binary shortcuts indicating file/application access times).\n")
+    p.add_run("• Live OS Sockets & DNS Resolver Cache: ").font.bold = True
+    p.add_run("Active TCP/UDP endpoints mapped to browser PIDs and system DNS cache for Incognito/InPrivate forensic detection.\n")
     p.add_run("• Simulated Forensic Incident Scenario: ").font.bold = True
-    p.add_run("16 chronological forensic events (searches, Wireshark download, app launches, document drafts) enabling instant demonstration without scanning personal workstation data.")
+    p.add_run("20 chronological forensic events (searches, proxy lookups, bypass downloads, app launches, document drafts) enabling instant demonstration without scanning personal workstation data.")
 
     # Point 5: Algorithm & Flowchart of functions used
     add_heading_styled("5. Algorithm & Flowchart of Implementation", level=2)
@@ -151,8 +153,9 @@ def generate_word_document():
     p.add_run("3. Normalize Chromium WebKit timestamp: Datetime = Epoch(1601-01-01 UTC) + timedelta(microseconds=ts).\n")
     p.add_run("4. Deconstruct query URLs with urllib.parse to extract search terms (?q=, search_query=).\n")
     p.add_run("5. Scan Windows Recent folder and extract last-modified timestamps for local application events.\n")
-    p.add_run("6. Merge disparate events into normalized dictionaries and sort chronologically.\n")
-    p.add_run("7. Render records in Tkinter Treeview with real-time filtering, Matplotlib charts, and HTML/CSV exports.")
+    p.add_run("6. Enumerate active browser sockets (ports 80/443) and DNS cache to recover Incognito/InPrivate traces.\n")
+    p.add_run("7. Merge disparate events into normalized dictionaries and sort chronologically.\n")
+    p.add_run("8. Render records in Tkinter Treeview with real-time filtering, Matplotlib charts, and HTML/CSV exports.")
 
     # Point 6: Screenshots of obtained results
     add_heading_styled("6. Screenshots of Obtained Results", level=2)

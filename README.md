@@ -166,10 +166,14 @@ datetime(1601, 1, 1) + timedelta(microseconds=chrome_timestamp)
 **Ans:** Tkinter is the standard built-in GUI library for Python. It requires zero external web server setup, runs natively on Windows desktops, and provides `ttk.Treeview` which is ideal for tabular timeline data.
 
 ### Q7: Can digital forensics detect activity conducted in Incognito / Private Browsing mode?
-**Ans:** Yes! While Chromium browsers do not save URLs to the on-disk `History.sqlite` database in Incognito mode, private browsing is not completely invisible. TraceLens detects incognito sessions through:
-1. **OS DNS Resolver Cache:** The operating system caches domain names resolved during incognito navigation.
-2. **Physical Disk Downloads:** Files downloaded in incognito remain saved in the user's Downloads directory with valid creation timestamps.
-3. **Session Volatility:** Active socket allocations and cache remnants persist until system reboot.
+**Ans:** Yes! While Chromium browsers do not commit URLs to the on-disk `History.sqlite` database in Incognito mode, private browsing is not completely invisible. TraceLens captures OS-level evidence:
+1. **Active Kernel Network Sockets & QUIC/TLS Streams:** When an incognito tab is open, the OS kernel maintains active TCP and UDP sockets (ports 80, 443) between the browser PID and remote servers. TraceLens captures these endpoints live and resolves hostnames via Reverse DNS.
+2. **OS DNS Resolver Cache:** The operating system caches domain-to-IP resolutions (accessible via `ipconfig /displaydns` or PowerShell `Get-DnsClientCache`).
+3. **Physical File Downloads:** Files downloaded inside an incognito session remain on disk in `~/Downloads` with intact creation and modification timestamps.
+4. **Process Execution Table:** The OS process manager records whether the browser was launched with `--incognito` or `-inprivate` switches.
+
+### Q8: Does TraceLens claim to read incognito history from the browser's SQLite database?
+**Ans:** No! Claiming to read incognito history from SQLite would be technically and forensically false, because Chromium's `OffTheRecordProfile` explicitly prevents writing private history records to disk. TraceLens strictly recovers truthful evidence from operating system network sockets, DNS cache, and file system remnants, exactly as done in professional digital forensics investigations (NIST SP 800-86).
 
 ---
 

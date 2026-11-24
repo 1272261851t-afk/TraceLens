@@ -159,10 +159,27 @@ Without a centralized correlator, manual inspection requires querying multiple d
     |    - Windows Recent Items     |   |    (Data Analysis)        |
     |    - User Downloads           |   +---------------------------+
     |                               |
-    | 3. sample_generator.py        |
+    | 3. incognito_parser.py        |
+    |    - Active Browser Sockets   |
+    |    - Reverse DNS Lookup       |
+    |    - OS DNS Resolver Cache    |
+    |    - Download File Remnants   |
+    |                               |
+    | 4. sample_generator.py        |
     |    - Simulated Forensic Case  |
     +-------------------------------+
 ```
+
+### 3.2 Incognito & Private Browsing Forensic Methodology
+
+A common misconception in basic digital forensics is that Incognito / InPrivate browsing completely hides a user's activities. While Chromium (Chrome, Edge, Brave) and Gecko (Firefox) explicitly isolate private sessions in volatile memory and do not commit visited URLs to the on-disk SQLite `History` database, the host operating system retains non-volatile and ephemeral artifacts:
+
+1. **Active Kernel Network Sockets & QUIC/TLS Streams:** When an incognito tab is open, the OS kernel (Windows/macOS) maintains active TCP and UDP connections (ports 80, 443) between the browser process and destination web servers. TraceLens captures these active endpoints live using `netstat` / OS socket tables, maps them to the browser process ID (PID), and performs Reverse DNS lookups to identify visited domains.
+2. **Operating System DNS Resolver Cache:** In order to load websites, the operating system must resolve domain names into IP addresses. Windows caches these resolutions in memory (accessible via `ipconfig /displaydns` or PowerShell `Get-DnsClientCache`).
+3. **Persistent Download Residue:** Files downloaded during an Incognito session are saved to physical storage (`~/Downloads`). Chromium does not purge downloaded files upon tab closure; file metadata and file creation timestamps remain intact on disk.
+4. **Process Execution Table:** The OS process management table records whether browser processes were launched with explicit flags such as `--incognito`, `-inprivate`, or `--private-window`.
+
+By correlating across these 4 operating system vectors, TraceLens achieves truthful, academically verifiable forensic detection of private browsing without fabricating inaccessible encrypted data.
 
 ---
 

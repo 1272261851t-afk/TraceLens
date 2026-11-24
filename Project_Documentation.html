@@ -232,7 +232,8 @@
         <ul style="margin-left: 20px; font-size: 9.5pt; line-height: 1.6;">
             <li><strong>Live Chromium SQLite History:</strong> Extracted from <code>%LOCALAPPDATA%\Google\Chrome\User Data\Default\History</code> and Microsoft Edge equivalent. Contains visit URLs, page titles, visit counts, and download records.</li>
             <li><strong>Windows OS Recent Shortcuts:</strong> Extracted from <code>%APPDATA%\Microsoft\Windows\Recent</code>. Binary <code>.lnk</code> shortcuts indicating file/application access times.</li>
-            <li><strong>Simulated Forensic Incident Scenario:</strong> 16 chronological forensic events (searches, Wireshark download, app launches, document drafts) enabling instant demonstration without scanning personal workstation data.</li>
+            <li><strong>Live OS Sockets & DNS Resolver Cache:</strong> Active TCP/UDP endpoints mapped to browser PIDs and system DNS cache for Incognito/InPrivate forensic detection.</li>
+            <li><strong>Simulated Forensic Incident Scenario:</strong> 20 chronological forensic events (searches, proxy lookups, bypass downloads, app launches, document drafts) enabling instant demonstration without scanning personal workstation data.</li>
         </ul>
     </div>
 
@@ -326,6 +327,11 @@ Step 8: Close sqlite3 connection and delete temporary clone from disk</div>
                     <td>Filtering & Keyword Search</td>
                     <td>Instant UI table update on keystrokes with 0ms visual lag</td>
                     <td><span style="color: #166534; font-weight: bold;">PASSED</span></td>
+                </tr>
+                <tr>
+                    <td>Incognito Forensics Detection</td>
+                    <td>Recovered active browser sockets and physical download remnants in private mode</td>
+                    <td><span style="color: #166534; font-weight: bold;">PASSED (Truthful OS Sockets)</span></td>
                 </tr>
                 <tr>
                     <td>Report Generation</td>
