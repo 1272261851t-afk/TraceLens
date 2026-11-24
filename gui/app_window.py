@@ -36,6 +36,7 @@ class TraceLensApp(tk.Tk):
         self.source_var = tk.StringVar(value="All")
         self.date_var = tk.StringVar(value="All Time")
         self.sort_asc_var = tk.BooleanVar(value=False)
+        self.incognito_only_var = tk.BooleanVar(value=False)
         self.status_var = tk.StringVar(value="Welcome to TraceLens. Click 'Scan System Artifacts' or 'Load Demo Forensic Case' to begin.")
 
         # Setup styling and components
@@ -246,6 +247,19 @@ class TraceLensApp(tk.Tk):
         )
         sort_chk.pack(side=tk.LEFT, padx=(0, 10))
 
+        # Incognito Only Filter Checkbox
+        incognito_chk = tk.Checkbutton(
+            filter_frame,
+            text="🕵️ Incognito Only",
+            variable=self.incognito_only_var,
+            command=self.apply_filters,
+            bg="#ffffff",
+            fg="#7e22ce",
+            activeforeground="#581c87",
+            font=("Segoe UI", 9, "bold")
+        )
+        incognito_chk.pack(side=tk.LEFT, padx=(0, 10))
+
         # Reset button
         reset_btn = ttk.Button(filter_frame, text="Reset Filters", command=self.reset_filters)
         reset_btn.pack(side=tk.RIGHT)
@@ -293,6 +307,7 @@ class TraceLensApp(tk.Tk):
         # Row tag colors
         self.tree.tag_configure("evenrow", background="#ffffff")
         self.tree.tag_configure("oddrow", background="#f8fafc")
+        self.tree.tag_configure("incognitorow", background="#faf5ff", foreground="#581c87")
 
         # Double click to open artifact details
         self.tree.bind("<Double-1>", self.on_item_double_click)
@@ -358,7 +373,16 @@ class TraceLensApp(tk.Tk):
         """
         self.tree.delete(*self.tree.get_children())
         for idx, item in enumerate(artifacts, start=1):
-            tag = "evenrow" if idx % 2 == 0 else "oddrow"
+            is_incognito = (
+                "incognito" in item.get("category", "").lower()
+                or "incognito" in item.get("source", "").lower()
+                or "inprivate" in item.get("source", "").lower()
+            )
+            if is_incognito:
+                tag = "incognitorow"
+            else:
+                tag = "evenrow" if idx % 2 == 0 else "oddrow"
+
             self.tree.insert(
                 "",
                 tk.END,
@@ -391,13 +415,15 @@ class TraceLensApp(tk.Tk):
         source = self.source_var.get()
         date_filter = self.date_var.get()
         sort_asc = self.sort_asc_var.get()
+        incognito_only = self.incognito_only_var.get()
 
         filtered = self.engine.filter_artifacts(
             query=query,
             category=category,
             source=source,
             date_filter=date_filter,
-            sort_ascending=sort_asc
+            sort_ascending=sort_asc,
+            incognito_only=incognito_only
         )
         self.populate_table(filtered)
 
@@ -410,6 +436,7 @@ class TraceLensApp(tk.Tk):
         self.source_var.set("All")
         self.date_var.set("All Time")
         self.sort_asc_var.set(False)
+        self.incognito_only_var.set(False)
         self.apply_filters()
 
     def on_load_demo_case(self):

@@ -132,6 +132,43 @@ def generate_forensic_case_artifacts():
             "youtube.com",
             "Visits: 2 | Typed: 0"
         ),
+        # Incognito / InPrivate Sessions (Forensic Traces)
+        (
+            base_time + timedelta(days=1, hours=22, minutes=10),
+            "Chrome Incognito",
+            "Incognito Activity",
+            "Incognito Search: 'how to clear browser history and DNS cache'",
+            "https://duckduckgo.com/?q=how+to+clear+browser+history+and+DNS+cache",
+            "duckduckgo.com",
+            "Session: Private / Incognito Mode | DNS Resolver Trace"
+        ),
+        (
+            base_time + timedelta(days=1, hours=22, minutes=15),
+            "Chrome Incognito",
+            "Incognito Activity",
+            "Incognito Visit: 'anonymous-proxy-list.org'",
+            "https://anonymous-proxy-list.org/secure-browsing",
+            "anonymous-proxy-list.org",
+            "Session: Private / Incognito Mode | Host Recovered via OS DNS"
+        ),
+        (
+            base_time + timedelta(days=1, hours=22, minutes=25),
+            "Chrome Incognito",
+            "Incognito Activity",
+            "Incognito Download: 'bypass_exam_firewall_proxy.py'",
+            "Path: C:\\Users\\Student\\Downloads\\bypass_exam_firewall_proxy.py",
+            "github.com",
+            "Session: Incognito Mode | Physical File Left on Disk (0.12 MB)"
+        ),
+        (
+            base_time + timedelta(days=2, hours=0, minutes=40),
+            "Edge InPrivate",
+            "Incognito Activity",
+            "InPrivate Visit: 'onion-directory-index.net'",
+            "https://onion-directory-index.net/database",
+            "onion-directory-index.net",
+            "Session: InPrivate Session | DNS Resolver Host Trace"
+        ),
         # Today: Final checks and submission
         (
             base_time + timedelta(days=2, hours=8, minutes=15),

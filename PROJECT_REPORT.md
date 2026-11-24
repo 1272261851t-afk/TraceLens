@@ -182,6 +182,7 @@ To ensure collaborative and disciplined engineering development, the project was
 - Engineered the temporary file cloning mechanism to bypass SQLite file locking when browsers are actively open.
 - Created mathematical timestamp conversion routines for Chromium/WebKit epochs (microseconds since 1601-01-01).
 - Implemented URL query parsing logic using `urllib.parse` to extract search keywords from Google, Bing, DuckDuckGo, and YouTube.
+- Authored `parsers/incognito_parser.py` to detect Incognito/InPrivate private browsing traces via OS DNS resolver cache and download remnants.
 
 ### 4.3 OS Artifacts & Timeline Correlation Engine (OM Nalawade)
 - Authored `parsers/app_parser.py` to extract Windows Recent items (`.lnk` files) and user downloads.

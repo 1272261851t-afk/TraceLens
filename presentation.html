@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TraceLens - 10-Slide Project Presentation</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --bg-dark: #090d16;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(148, 163, 184, 0.15);
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+            --accent-purple: #a855f7;
+            --accent-amber: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        /* Top Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 5px;
+            background: rgba(255,255,255,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 10%;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            transition: width 0.3s ease;
+        }
+
+        /* Slide Viewport */
+        .deck {
+            flex: 1;
+            display: flex;
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 40px 60px 80px 60px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            transform: scale(0.98);
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Typography & Components */
+        .slide-tag {
+            display: inline-block;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .slide-title {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(96, 165, 250, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        .card-body strong {
+            color: #e2e8f0;
+        }
+
+        .code-box {
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+            color: #38bdf8;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+
+        /* Title Slide Specific */
+        .hero-title {
+            font-size: 54px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .hero-sub {
+            font-size: 24px;
+            color: #e2e8f0;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .hero-desc {
+            font-size: 15px;
+            color: var(--text-muted);
+            max-width: 800px;
+            margin-bottom: 30px;
+        }
+
+        .member-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--card-border);
+            padding: 14px 18px;
+            border-radius: 10px;
+        }
+
+        .member-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: #ffffff;
+        }
+
+        .member-prn {
+            font-size: 12px;
+            color: #60a5fa;
+            margin: 2px 0;
+        }
+
+        .member-role {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Bottom Controls */
+        .footer-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 55px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .counter {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .key-hint {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .badge-pill {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="deck">
+        <!-- SLIDE 1 -->
+        <div class="slide active" id="slide-1">
+            <span class="slide-tag">MIT World Peace University • Department of Computer Engineering</span>
+            <h1 class="hero-title">TraceLens</h1>
+            <div class="hero-sub">Browser & App Artifact Timeline Visualizer</div>
+            <div class="hero-desc">
+                An open-source digital forensics tool designed to ingest, normalize, and correlate disparate browser histories, downloads, search queries, and operating system activity into a unified chronological timeline.
+            </div>
+
+            <div class="grid-4" style="max-width: 900px;">
+                <div class="member-card">
+                    <div class="member-name">1. Tanishq Gunjal</div>
+                    <div class="member-prn">PRN: 1272261851 • 1272261851.t@mitwpu.edu.in</div>
+                    <div class="member-role">Project Lead & GUI Architecture</div>
+                </div>
+                <div class="member-card">
+                    <div class="member-name">2. Janhavi Dahiwale</div>
+                    <div class="member-prn">PRN: 1272261225 • 1272261225.j@mitwpu.edu.in</div>
+                    <div class="member-role">Browser Forensics & SQLite Parser</div>
+                </div>
+                <div class="member-card">
+                    <div class="member-name">3. OM Nalawade</div>
+                    <div class="member-prn">PRN: 1272261153 • 1272261153.o@mitwpu.edu.in</div>
+                    <div class="member-role">OS Artifacts & Timeline Engine</div>
+                </div>
+                <div class="member-card">
+                    <div class="member-name">4. Ayush Warudkar</div>
+                    <div class="member-prn">PRN: 1272261894 • 1272261894.a@mitwpu.edu.in</div>
+                    <div class="member-role">Visual Analytics & Reporting Engine</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2 -->
+        <div class="slide" id="slide-2">
+            <span class="slide-tag">Slide 02 • Problem Statement</span>
+            <h2 class="slide-title">The Challenge of Fragmented Digital Footprints</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title">🧩 Fragmented Artifacts</div>
+                    <div class="card-body">
+                        Users constantly switch between browsers (Chrome, Edge) and local software (VS Code, Word, Downloads). Every program logs timestamped actions in <strong>isolated, proprietary formats</strong> with differing epoch systems.
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🔍 The Investigation Gap</div>
+                    <div class="card-body">
+                        During malware incidents, data leaks, or student evaluations, examiners need to know: <em>What was searched? What was downloaded? What executable was launched next?</em> Answering this requires correlation.
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">⚖️ Enterprise Software Bloat</div>
+                    <div class="card-body">
+                        Commercial tools like FTK Imager or EnCase are <strong>heavyweight, expensive, and complex</strong>. There was no lightweight, zero-setup Python tool designed for rapid timeline reconstruction.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3 -->
+        <div class="slide" id="slide-3">
+            <span class="slide-tag">Slide 03 • Objectives & Scope</span>
+            <h2 class="slide-title">Project Objectives & Technical Scope</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">🚀 Core Capabilities</div>
+                    <div class="card-body">
+                        • <strong>Browser Extraction:</strong> Ingest Chrome, Edge, and Brave history, visits, and downloads.<br>
+                        • <strong>OS Activity Extraction:</strong> Parse Windows Recent shortcuts (.lnk) and User Downloads.<br>
+                        • <strong>Safe Database Unlocking:</strong> Circumvent active SQLite file locks safely via shadow cloning.<br>
+                        • <strong>Cross-Platform Support:</strong> Fully operable on both Windows and macOS.
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">📊 Correlation & Insights</div>
+                    <div class="card-body">
+                        • <strong>WebKit Epoch Converter:</strong> Decode microseconds since 1601 to local time.<br>
+                        • <strong>Search Query Parser:</strong> Decode search keywords from Google, Bing, YouTube.<br>
+                        • <strong>Multi-Parameter Filters:</strong> Live keyword search, categories, and date presets.<br>
+                        • <strong>Visual Analytics & Reports:</strong> Matplotlib graphs, styled HTML and CSV reports.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4 -->
+        <div class="slide" id="slide-4">
+            <span class="slide-tag">Slide 04 • System Architecture</span>
+            <h2 class="slide-title">System Architecture & Work Distribution</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">⚙️ Architecture Pipeline</div>
+                    <div class="card-body">
+                        <strong>1. Data Ingestion:</strong> Chrome / Edge SQLite + Windows Recent + Downloads<br>
+                        <strong>2. Safe Cloner:</strong> Clones DB to %TEMP% to bypass active write locks<br>
+                        <strong>3. Timestamp Engine:</strong> Converts WebKit 1601 & Unix epochs to datetime<br>
+                        <strong>4. Timeline Engine:</strong> Unifies, correlates, and sorts chronologically<br>
+                        <strong>5. GUI View:</strong> Tkinter Treeview table with search and combobox filters<br>
+                        <strong>6. Export & Analytics:</strong> Matplotlib charts & HTML forensics reports
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">👥 Team Ownership</div>
+                    <div class="card-body">
+                        • <strong>Tanishq Gunjal:</strong> GUI Architecture, Treeview table, Inspector modal, Event flow (<code>app_window.py</code>, <code>main.py</code>)<br><br>
+                        • <strong>Janhavi Dahiwale:</strong> SQLite parser, WebKit epoch converter, search query parser (<code>browser_parser.py</code>)<br><br>
+                        • <strong>OM Nalawade:</strong> Windows Recent parser, timeline correlation engine, demo case (<code>app_parser.py</code>, <code>timeline_engine.py</code>)<br><br>
+                        • <strong>Ayush Warudkar:</strong> Matplotlib visual charts, HTML/CSV report exporters (<code>analytics_view.py</code>, <code>report_exporter.py</code>)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5 -->
+        <div class="slide" id="slide-5">
+            <span class="slide-tag">Slide 05 • Key Innovation 1</span>
+            <h2 class="slide-title">Browser Forensics & Safe Database Cloning</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">🛡️ Safe Shadow DB Cloning</div>
+                    <div class="card-body">
+                        Active browsers hold exclusive OS locks on the <code>History</code> SQLite file. Direct access raises <code>sqlite3.OperationalError: database is locked</code>.
+                        <div class="code-box">temp_file = tempfile.NamedTemporaryFile(delete=False)
+shutil.copy2(history_path, temp_file.name)
+conn = sqlite3.connect(temp_file.name)</div>
+                        This guarantees 100% crash-free extraction while browsers remain open!
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">⏰ WebKit Epoch Conversion & Queries</div>
+                    <div class="card-body">
+                        Chromium counts microseconds since <strong>January 1, 1601 UTC</strong>:
+                        <div class="code-box">def chrome_to_dt(ts):
+    return datetime(1601, 1, 1) + timedelta(microseconds=ts)</div>
+                        Automatically extracts keywords from query parameters (<code>?q=</code>, <code>search_query=</code>) across Google, Bing, and YouTube.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 6 -->
+        <div class="slide" id="slide-6">
+            <span class="slide-tag">Slide 06 • Key Innovation 2</span>
+            <h2 class="slide-title">OS Artifacts & Chronological Correlation</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">📂 Operating System Artifacts</div>
+                    <div class="card-body">
+                        • <strong>Windows Recent Items:</strong> Parses shortcut (<code>.lnk</code>) files in <code>%APPDATA%\Microsoft\Windows\Recent</code> with modified timestamps.<br><br>
+                        • <strong>User Downloads Scanner:</strong> Scans recently downloaded packages with file sizes in MB.<br><br>
+                        • <strong>Extension Classifier:</strong> Intelligent tagging into Documents, Source Code, Executables, and Media.
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">⚡ Chronological Correlation Engine</div>
+                    <div class="card-body">
+                        Normalizes all disparate artifacts into unified Python dictionaries:
+                        <div class="code-box">{
+    "timestamp": "2026-11-21 22:22:31",
+    "source": "Microsoft Edge",
+    "category": "Web Visit",
+    "title": "College Portal Login",
+    "details": "https://exam.college.edu/login",
+    "extra": "Visits: 2 | Typed: 1"
+}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 7 -->
+        <div class="slide" id="slide-7">
+            <span class="slide-tag">Slide 07 • Desktop GUI</span>
+            <h2 class="slide-title">Interactive Desktop Graphical Interface</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">🖥️ GUI Features & Styling</div>
+                    <div class="card-body">
+                        • <strong>Modern ttk Theme:</strong> Styled using the native <code>clam</code> theme with alternating row colors.<br><br>
+                        • <strong>Multi-Attribute Filters:</strong> Instant search box, category dropdown, source filter, and date presets (Today, 24 Hours, 7 Days, 30 Days).<br><br>
+                        • <strong>Double-Click Inspector:</strong> Double-clicking any event opens a modal dialog displaying full URLs, file paths, and a one-click <strong>"Copy Details"</strong> button.
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🧪 Pre-Bundled Forensic Demo Case</div>
+                    <div class="card-body">
+                        Evaluators in college labs can click <strong>"Load Demo Forensic Case"</strong> to instantly populate the visualizer with a simulated cyber incident:
+                        <br><br>
+                        • Web search for forensics tools<br>
+                        • Examination portal login<br>
+                        • Download of Wireshark setup executable<br>
+                        • Execution of the installer in Windows<br>
+                        • Word document project draft editing
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8 -->
+        <div class="slide" id="slide-8">
+            <span class="slide-tag">Slide 08 • Visual Analytics</span>
+            <h2 class="slide-title">Visual Analytics & Forensics Metrics</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title">📊 Hourly Distribution</div>
+                    <div class="card-body">
+                        24-hour histogram (00:00 to 23:00) showing user activity patterns. Instantly flags <strong>suspicious off-hours operations</strong> (e.g. 2 AM - 4 AM).
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🥧 Category Breakdown</div>
+                    <div class="card-body">
+                        Pie chart visualizing the distribution of Web Visits vs. Web Searches vs. File Downloads vs. Application Executions.
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">📈 Top Web Domains</div>
+                    <div class="card-body">
+                        Horizontal bar chart ranking the most visited internet domains, highlighting frequent external connections and potential exfiltration sites.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 9 -->
+        <div class="slide" id="slide-9">
+            <span class="slide-tag">Slide 09 • Reporting & Export</span>
+            <h2 class="slide-title">Forensic Audit Reports & Case Output</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">📄 Executive HTML Forensic Report</div>
+                    <div class="card-body">
+                        • Generates a standalone, responsive HTML report.<br>
+                        • Displays summary metric cards (Total Correlated Events, Earliest & Latest Activity, Generated Date).<br>
+                        • Formatted domain frequency table and category badges.<br>
+                        • Color-coded chronological timeline table.<br>
+                        • Automatically launches in the user's default browser (Chrome, Edge, Safari).
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">📑 CSV Spreadsheet Export</div>
+                    <div class="card-body">
+                        • Clean tabular CSV export compatible with Microsoft Excel, Google Sheets, or Python Pandas.<br><br>
+                        • Includes standardized columns: <em>Timestamp, Source, Category, Event Title, Domain, Details, and Extra Attributes</em>.<br><br>
+                        • Ready for formal academic submission or case evidence logging.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 10 -->
+        <div class="slide" id="slide-10">
+            <span class="slide-tag">Slide 10 • Conclusion & Future Scope</span>
+            <h2 class="slide-title">Conclusion & Future Enhancements</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">🏁 Project Conclusions</div>
+                    <div class="card-body">
+                        ✔ Built a lightweight, functional digital forensics correlator in pure Python.<br>
+                        ✔ Resolved the active SQLite database locking problem.<br>
+                        ✔ Successfully correlated web searches, downloads, and app executions.<br>
+                        ✔ Cross-platform operational on Windows 10/11 and macOS.<br>
+                        ✔ Demonstrates disciplined engineering and clear teamwork among all 4 MIT-WPU students.
+                    </div>
+                </div>
+                <div class="card" style="background: rgba(30, 58, 138, 0.4); border-color: rgba(96, 165, 250, 0.4);">
+                    <div class="card-title" style="color: #93c5fd;">🚀 Future Scope & Q&A</div>
+                    <div class="card-body">
+                        1. Mozilla Firefox support (<code>places.sqlite</code>)<br>
+                        2. Automated off-hours anomaly detection (flagging late-night actions)<br>
+                        3. Standalone executable packaging (.exe / .app)<br><br>
+                        <h3 style="color: #ffffff; font-size: 22px; margin-top: 10px;">Thank You!</h3>
+                        <p style="color: #93c5fd; font-size: 14px;">We are open for Viva Voce Questions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="footer-bar">
+        <div class="key-hint">Keys: <strong>← Prev</strong> | <strong>Next →</strong> | <strong>Space</strong> | <strong>F (Fullscreen)</strong></div>
+        <div class="counter" id="slideCounter">Slide 1 of 10</div>
+        <div>
+            <button class="nav-btn" onclick="prevSlide()">◀ Previous</button>
+            <button class="nav-btn" onclick="nextSlide()">Next ▶</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 10;
+
+        function updateSlide() {
+            document.querySelectorAll('.slide').forEach((s, idx) => {
+                s.classList.toggle('active', idx + 1 === currentSlide);
+            });
+            document.getElementById('slideCounter').innerText = `Slide ${currentSlide} of ${totalSlides}`;
+            document.getElementById('progressBar').style.width = `${(currentSlide / totalSlides) * 100}%`;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                prevSlide();
+            } else if (e.key === 'f' || e.key === 'F') {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                } else {
+                    document.exitFullscreen().catch(() => {});
+                }
+            }
+        });
+    </script>
+</body>
+</html>

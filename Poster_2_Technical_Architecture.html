@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TraceLens - Technical Architecture Poster</title>
+    <style>
+        @page { size: A3 landscape; margin: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { width: 1920px; height: 1080px; background: #0b1120; color: #f8fafc; padding: 32px 40px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+        
+        .header { background: linear-gradient(135deg, #0f172a, #1e293b); border: 1px solid #3b82f6; border-radius: 14px; padding: 22px 32px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .inst-title { font-size: 15px; text-transform: uppercase; letter-spacing: 2px; color: #38bdf8; font-weight: 700; margin-bottom: 4px; }
+        .main-title { font-size: 42px; font-weight: 900; color: #ffffff; }
+        .main-sub { font-size: 17px; color: #94a3b8; font-weight: 500; margin-top: 4px; }
+        .badge-box { background: rgba(59, 130, 246, 0.15); border: 1px solid #3b82f6; padding: 12px 20px; border-radius: 10px; text-align: right; }
+
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin: 20px 0; flex: 1; }
+        .col { display: flex; flex-direction: column; gap: 18px; }
+        .card { background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 18px 22px; flex: 1; display: flex; flex-direction: column; }
+        .card-title { font-size: 17px; font-weight: 800; color: #38bdf8; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; }
+        .card-body { font-size: 13.5px; line-height: 1.55; color: #cbd5e1; flex: 1; }
+
+        .pipeline-step { background: #1e293b; border-left: 4px solid #38bdf8; padding: 10px 14px; margin-bottom: 10px; border-radius: 4px; }
+        .pipeline-title { font-size: 14px; font-weight: 700; color: #ffffff; }
+        .pipeline-desc { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+        .code-box { background: #020617; border: 1px solid #1e293b; padding: 10px 12px; border-radius: 6px; font-family: Consolas, monospace; font-size: 12px; color: #a5f3fc; margin: 8px 0; }
+
+        .footer { background: #0f172a; border-radius: 12px; padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
+        .team-grid { display: flex; gap: 28px; }
+        .member { font-size: 13px; }
+        .member-name { font-weight: 700; color: #ffffff; }
+        .member-prn { color: #38bdf8; font-size: 11.5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <div class="inst-title">Technical Specification • Department of Computer Engineering • MIT-WPU</div>
+            <div class="main-title">TraceLens: Forensic Pipeline & Technical Architecture</div>
+            <div class="main-sub">Low-Level System Design, Lock Bypassing, Epoch Normalization & Correlation Algorithms</div>
+        </div>
+        <div class="badge-box">
+            <div style="font-size: 13px; color: #38bdf8; font-weight: 700;">ENGINEERING DEEP-DIVE</div>
+            <div style="font-size: 15px; color: #ffffff; font-weight: 600;">Cross-Platform Architecture</div>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <!-- Col 1 -->
+        <div class="col">
+            <div class="card">
+                <div class="card-title">1. Ingestion Sources & Data Models</div>
+                <div class="card-body">
+                    <div class="pipeline-step">
+                        <div class="pipeline-title">Chromium SQLite History (Chrome & Edge)</div>
+                        <div class="pipeline-desc">Table: <code>urls</code> (url, title, visit_count, typed_count, last_visit_time)<br>Table: <code>downloads</code> (target_path, tab_url, total_bytes, start_time)</div>
+                    </div>
+                    <div class="pipeline-step">
+                        <div class="pipeline-title">Windows Recent File Artifacts</div>
+                        <div class="pipeline-desc">Path: <code>%APPDATA%\Microsoft\Windows\Recent</code><br>Binary .lnk shortcuts with last-modified timestamps and target file paths.</div>
+                    </div>
+                    <div class="pipeline-step">
+                        <div class="pipeline-title">User Downloads Storage Scanner</div>
+                        <div class="pipeline-desc">Path: <code>~/Downloads</code><br>Live physical file indexing, byte sizing, and extension identification.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">2. Lock Bypassing Algorithm (Shadow Copy)</div>
+                <div class="card-body">
+                    When web browsers are actively running, Windows places exclusive write locks on SQLite databases.
+                    <div class="code-box">temp_file = tempfile.NamedTemporaryFile(
+    delete=False, suffix=".sqlite"
+)
+shutil.copy2(history_file_path, temp_file.name)
+conn = sqlite3.connect(temp_file.name)
+# Query safely, then clean up temp file!</div>
+                    <strong>Guarantees:</strong> 100% non-blocking data access with zero database lock crashes.
+                </div>
+            </div>
+        </div>
+
+        <!-- Col 2 -->
+        <div class="col">
+            <div class="card">
+                <div class="card-title">3. Epoch Conversion & Query Decoding</div>
+                <div class="card-body">
+                    <strong>Chromium WebKit Timestamp Formula:</strong><br>
+                    Counts microseconds elapsed since January 1, 1601 UTC.
+                    <div class="code-box">def chrome_time_to_datetime(ts):
+    epoch_start = datetime(1601, 1, 1)
+    return epoch_start + timedelta(microseconds=ts)</div>
+                    <strong>URL Query String Extractor:</strong><br>
+                    Deconstructs query parameters using Python's <code>urllib.parse</code>:
+                    <div class="code-box"># Extracts 'q=' (Google/Bing) or 'search_query=' (YouTube)
+query_dict = parse_qs(parsed.query)
+search_term = unquote_plus(query_dict['q'][0])</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">4. Timeline Correlation Engine</div>
+                <div class="card-body">
+                    Standardizes all disparate inputs into a unified dictionary structure:
+                    <div class="code-box">{
+    "timestamp": "2026-11-21 22:22:31",
+    "dt": datetime_obj,
+    "source": "Microsoft Edge",
+    "category": "Web Visit",
+    "title": "College Portal Login",
+    "details": "https://exam.college.edu/login",
+    "domain": "college.edu",
+    "extra": "Visits: 2 | Typed: 1"
+}</div>
+                    Chronological in-memory sorting: <code>O(N log N)</code> via Timsort.
+                </div>
+            </div>
+        </div>
+
+        <!-- Col 3 -->
+        <div class="col">
+            <div class="card">
+                <div class="card-title">5. Multi-Attribute Filtering Engine</div>
+                <div class="card-body">
+                    Executes instantaneous multi-parameter filtering across active memory:
+                    <div class="pipeline-step">
+                        <div class="pipeline-title">Keyword Substring Filter</div>
+                        <div class="pipeline-desc">Case-insensitive search across title, URL, domain, and source.</div>
+                    </div>
+                    <div class="pipeline-step">
+                        <div class="pipeline-title">Category & Source Combobox Filters</div>
+                        <div class="pipeline-desc">Filters Web Visits, Searches, Downloads, and System Executions.</div>
+                    </div>
+                    <div class="pipeline-step">
+                        <div class="pipeline-title">Timeframe Delta Filtering</div>
+                        <div class="pipeline-desc">Dynamic cutoffs: Today, Last 24 Hours, Last 7 Days, Last 30 Days.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">6. Output & Cross-Platform Execution</div>
+                <div class="card-body">
+                    • <strong>Matplotlib Canvas:</strong> 3-subplot embedded forensic metric visualization.<br>
+                    • <strong>HTML/CSV Exporters:</strong> Generates executive audit documentation.<br>
+                    • <strong>Cross-Platform Compatibility:</strong> Runs out of the box on Windows (<code>run.bat</code>) and macOS (<code>run_mac.command</code> / <code>python3 main.py</code>).
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div style="font-size: 13px; color: #94a3b8;">
+            <strong style="color: #ffffff;">MIT-WPU First Year Engineering Team (Div A • Batch B1):</strong>
+        </div>
+        <div class="team-grid">
+            <div class="member">
+                <div class="member-name">1. Tanishq Gunjal (Lead)</div>
+                <div class="member-prn">PRN: 1272261851 • GUI Architecture</div>
+            </div>
+            <div class="member">
+                <div class="member-name">2. Janhavi Dahiwale</div>
+                <div class="member-prn">PRN: 1272261225 • Browser Forensics</div>
+            </div>
+            <div class="member">
+                <div class="member-name">3. OM Nalawade</div>
+                <div class="member-prn">PRN: 1272261153 • Timeline Engine</div>
+            </div>
+            <div class="member">
+                <div class="member-name">4. Ayush Warudkar</div>
+                <div class="member-prn">PRN: 1272261894 • Visual Analytics</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

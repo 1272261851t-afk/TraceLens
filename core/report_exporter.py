@@ -60,7 +60,9 @@ def export_to_html(artifacts, stats, filepath, case_name="TraceLens Forensic Inv
         cat = a.get("category", "")
         # Color coding class
         badge_cls = "badge-other"
-        if "Search" in cat:
+        if "Incognito" in cat or "InPrivate" in a.get("source", "") or "Incognito" in a.get("source", ""):
+            badge_cls = "badge-incognito"
+        elif "Search" in cat:
             badge_cls = "badge-search"
         elif "Visit" in cat:
             badge_cls = "badge-visit"
@@ -187,6 +189,7 @@ def export_to_html(artifacts, stats, filepath, case_name="TraceLens Forensic Inv
         .badge-search {{ background: #f3e8ff; color: #7e22ce; }}
         .badge-download {{ background: #dcfce7; color: #15803d; }}
         .badge-app {{ background: #ffedd5; color: #c2410c; }}
+        .badge-incognito {{ background: #581c87; color: #f5d0fe; border: 1px solid #a855f7; }}
         .badge-other {{ background: #f1f5f9; color: #475569; }}
         .source-tag {{
             background: #f1f5f9;

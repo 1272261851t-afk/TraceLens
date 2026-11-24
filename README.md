@@ -57,6 +57,12 @@ Modern computer users spend hours switching between web browsers (Google Chrome,
 6. **Pre-Bundled Demo Forensic Case:**
    - Includes a realistic simulated incident investigation case ("Cyber Investigation Case #2026") so evaluators and teachers can test the full capabilities of TraceLens instantly in college labs without touching local browser data.
 
+7. **🕵️ Incognito & Private Browsing Forensic Traces:**
+   - Detects and correlates traces left during private browsing sessions:
+     - **OS DNS Resolver Cache:** The operating system still resolves and caches domain names accessed during incognito navigation.
+     - **Physical Downloads:** Files downloaded in incognito remain on the physical file system with valid creation timestamps.
+     - **Dedicated UI Filter:** Includes a 1-click **"🕵️ Incognito Only"** filter button and distinct violet row tagging in the timeline table.
+
 ---
 
 ## 📁 Project Directory Structure
@@ -158,6 +164,12 @@ datetime(1601, 1, 1) + timedelta(microseconds=chrome_timestamp)
 
 ### Q6: Why did you choose Tkinter over a web framework?
 **Ans:** Tkinter is the standard built-in GUI library for Python. It requires zero external web server setup, runs natively on Windows desktops, and provides `ttk.Treeview` which is ideal for tabular timeline data.
+
+### Q7: Can digital forensics detect activity conducted in Incognito / Private Browsing mode?
+**Ans:** Yes! While Chromium browsers do not save URLs to the on-disk `History.sqlite` database in Incognito mode, private browsing is not completely invisible. TraceLens detects incognito sessions through:
+1. **OS DNS Resolver Cache:** The operating system caches domain names resolved during incognito navigation.
+2. **Physical Disk Downloads:** Files downloaded in incognito remain saved in the user's Downloads directory with valid creation timestamps.
+3. **Session Volatility:** Active socket allocations and cache remnants persist until system reboot.
 
 ---
 

@@ -16,6 +16,7 @@ from collections import Counter
 from parsers.browser_parser import get_all_browser_artifacts
 from parsers.app_parser import get_all_app_artifacts
 from parsers.sample_generator import generate_forensic_case_artifacts
+from parsers.incognito_parser import get_all_incognito_artifacts
 
 
 class TimelineEngine:
@@ -50,6 +51,13 @@ class TimelineEngine:
             except Exception as e:
                 print(f"[Error] Failed to load app artifacts: {e}")
 
+            # 3. Fetch Incognito & DNS traces
+            try:
+                incognito_items = get_all_incognito_artifacts()
+                self.raw_artifacts.extend(incognito_items)
+            except Exception as e:
+                print(f"[Error] Failed to load incognito artifacts: {e}")
+
         # Ensure all artifacts have a sorting key and valid datetime
         valid_items = []
         for item in self.raw_artifacts:
@@ -67,12 +75,21 @@ class TimelineEngine:
         self.filtered_artifacts = list(self.raw_artifacts)
         return len(self.raw_artifacts)
 
-    def filter_artifacts(self, query="", category="All", source="All", date_filter="All Time", sort_ascending=False):
+    def filter_artifacts(self, query="", category="All", source="All", date_filter="All Time", sort_ascending=False, incognito_only=False):
         """
-        Filters artifacts based on keyword search, category, source, and date range.
+        Filters artifacts based on keyword search, category, source, date range, and incognito flag.
         """
         results = list(self.raw_artifacts)
         now = datetime.now()
+
+        # 0. Incognito Mode Filtering
+        if incognito_only:
+            results = [
+                a for a in results
+                if "incognito" in a.get("category", "").lower()
+                or "incognito" in a.get("source", "").lower()
+                or "inprivate" in a.get("source", "").lower()
+            ]
 
         # 1. Date Range Filtering
         if date_filter == "Today":

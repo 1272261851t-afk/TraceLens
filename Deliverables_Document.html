@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini Project: Demonstration and Deliverables - TraceLens</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm 16mm 20mm 16mm;
+            @bottom-right {
+                content: counter(page);
+            }
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        body {
+            color: #1e293b;
+            line-height: 1.5;
+            background: #ffffff;
+            font-size: 11pt;
+            padding: 10px;
+        }
+        .header {
+            border-bottom: 2px solid #1e3a8a;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+        .inst-title {
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #2563eb;
+            font-weight: 700;
+        }
+        .doc-title {
+            font-size: 20pt;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 4px 0;
+        }
+        .proj-name {
+            font-size: 13pt;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+        .meta-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px 14px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9.5pt;
+        }
+        .section {
+            margin-bottom: 24px;
+            page-break-inside: avoid;
+        }
+        .section-header {
+            font-size: 14pt;
+            font-weight: 700;
+            color: #1e3a8a;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 4px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .section-num {
+            background: #1e3a8a;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11pt;
+            margin-right: 8px;
+        }
+        p {
+            margin-bottom: 8px;
+            text-align: justify;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 16px 0;
+            font-size: 9.5pt;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 7px 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .code-box {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-left: 3px solid #2563eb;
+            padding: 8px 12px;
+            font-family: Consolas, monospace;
+            font-size: 9pt;
+            margin: 8px 0;
+            color: #0f172a;
+            white-space: pre-wrap;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 8.5pt;
+            font-weight: 600;
+        }
+        .badge-blue { background: #dbeafe; color: #1e40af; }
+        .badge-green { background: #dcfce7; color: #166534; }
+        .badge-amber { background: #fef3c7; color: #92400e; }
+        .page-break {
+            page-break-before: always;
+        }
+        .img-container {
+            text-align: center;
+            margin: 14px 0;
+        }
+        .img-container img {
+            max-width: 90%;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
+        .img-caption {
+            font-size: 9pt;
+            color: #64748b;
+            margin-top: 4px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="inst-title">MIT World Peace University (MIT-WPU) • Department of Computer Engineering</div>
+        <div class="doc-title">Mini Project: Demonstration & Deliverables</div>
+        <div class="proj-name">Project: Browser & App Artifact Timeline Visualizer ("TraceLens")</div>
+        <div class="meta-box">
+            <div><strong>Team Members:</strong> Tanishq Gunjal, Janhavi Dahiwale, OM Nalawade, Ayush Warudkar</div>
+            <div><strong>Academic Year:</strong> 2026–2027 | <strong>Batch:</strong> B1 (Div A)</div>
+        </div>
+    </div>
+
+    <!-- DELIVERABLE 1 -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-num">1</span> Dataset Description
+        </div>
+        <p>
+            The <strong>TraceLens</strong> system consumes digital forensic artifacts gathered from heterogeneous sources on the host workstation. Rather than requiring external synthetic datasets, TraceLens dynamically interfaces with local system data repositories and includes a standardized benchmark case study.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Dataset Source</th>
+                    <th style="width: 25%;">Underlying Storage / Format</th>
+                    <th style="width: 25%;">Key Attributes & Fields</th>
+                    <th style="width: 30%;">Forensic Significance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Chromium Web Browsers</strong><br>(Google Chrome, Microsoft Edge, Brave)</td>
+                    <td>SQLite 3 Database (<code>History</code>)<br>Tables: <code>urls</code>, <code>downloads</code></td>
+                    <td><code>url</code>, <code>title</code>, <code>visit_count</code>, <code>typed_count</code>, <code>last_visit_time</code> (WebKit 1601 Epoch), <code>target_path</code>, <code>total_bytes</code></td>
+                    <td>Establishes user internet activities, direct domain navigation, web search strings, and files downloaded from external origins.</td>
+                </tr>
+                <tr>
+                    <td><strong>Operating System App Activity</strong><br>(Windows OS Recent Artifacts)</td>
+                    <td>Binary Shortcut Files (<code>.lnk</code>)<br>Directory: <code>%APPDATA%\Microsoft\Windows\Recent</code></td>
+                    <td><code>FileName</code>, <code>FilePath</code>, <code>LastModifiedTime</code> (File System Epoch), <code>FileExtension</code>, <code>FileSize</code></td>
+                    <td>Identifies newly created, edited, or executed desktop documents, spreadsheets, compilers, and executables.</td>
+                </tr>
+                <tr>
+                    <td><strong>Local System Ingestion</strong><br>(User Downloads Directory)</td>
+                    <td>Local Directory Indexing<br>Path: <code>~/Downloads</code></td>
+                    <td><code>FileName</code>, <code>FileExtension</code>, <code>FileSizeBytes</code>, <code>CreationTime</code>, <code>ModificationTime</code></td>
+                    <td>Correlates browser download records with actual persistence on physical storage.</td>
+                </tr>
+                <tr>
+                    <td><strong>Simulated Forensics Scenario</strong><br>(Case Study #2026 Benchmark)</td>
+                    <td>In-Memory Standardized JSON / Dict Stream<br>16 Interconnected Chronological Events</td>
+                    <td><code>timestamp</code>, <code>source</code>, <code>category</code>, <code>title</code>, <code>domain</code>, <code>details</code>, <code>extra</code></td>
+                    <td>Enables safe, standardized laboratory evaluations without compromising personal student workstation privacy.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- DELIVERABLE 2 -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-num">2</span> Data Preprocessing & Analysis Tasks Performed
+        </div>
+        <p>
+            Because digital artifacts originate in disparate proprietary schemas, several multi-stage data preprocessing pipelines were implemented:
+        </p>
+
+        <div style="margin-left: 10px;">
+            <p><strong>A. Active Database Lock Handling (Shadow Cloning):</strong><br>
+            Active browsers hold exclusive write locks on their SQLite database files, causing fatal <code>sqlite3.OperationalError</code> when queried directly. TraceLens safely clones the database to <code>%TEMP%</code> using <code>shutil.copy2</code>, executes queries against the clone, and immediately unlinks the temporary file.</p>
+
+            <p><strong>B. Epoch Conversion & Timestamp Normalization:</strong><br>
+            Chromium records time as microseconds elapsed since <strong>January 1, 1601 UTC</strong>, whereas Windows file systems use standard Unix epochs (seconds since 1970). We mathematically normalize all timestamps into uniform Python <code>datetime</code> objects and formatted ISO strings (<code>YYYY-MM-DD HH:MM:SS</code>):
+            </p>
+            <div class="code-box">def chrome_time_to_datetime(chrome_timestamp):
+    # WebKit epoch start: 1601-01-01 UTC
+    return datetime(1601, 1, 1) + timedelta(microseconds=chrome_timestamp)</div>
+
+            <p><strong>C. Search Query Extraction:</strong><br>
+            Raw URLs are deconstructed using <code>urllib.parse.urlparse</code> and <code>parse_qs</code> to extract keywords from query parameters (e.g. <code>?q=</code> for Google/Bing, <code>search_query=</code> for YouTube) using <code>unquote_plus</code>, isolating search intentions from navigational visits.</p>
+
+            <p><strong>D. Heuristic File Type Classification:</strong><br>
+            Extensions of accessed files are categorized into functional groups (<em>Documents</em>, <em>Source Code</em>, <em>Media</em>, <em>Executables</em>, and <em>Archives</em>) to facilitate domain-level forensic analysis.</p>
+
+            <p><strong>E. Multi-Stream Chronological Merging:</strong><br>
+            Disparate streams are merged into a single list of standardized dictionaries and sorted using high-performance in-memory sorting: <code>artifacts.sort(key=lambda x: x["dt"], reverse=True)</code>.</p>
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- DELIVERABLE 3 -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-num">3</span> List of Functions Used
+        </div>
+        <p>Below is the structured registry of custom functions authored across the project modules:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Function Signature</th>
+                    <th style="width: 20%;">Module & Contributor</th>
+                    <th style="width: 25%;">Input Parameters</th>
+                    <th style="width: 30%;">Operational Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>chrome_time_to_datetime(ts)</code></td>
+                    <td><code>parsers/browser_parser.py</code><br><span class="badge badge-blue">Janhavi Dahiwale</span></td>
+                    <td><code>ts</code>: integer (microseconds)</td>
+                    <td>Converts WebKit 1601 microsecond timestamps into standard Python <code>datetime</code>.</td>
+                </tr>
+                <tr>
+                    <td><code>extract_search_query(url)</code></td>
+                    <td><code>parsers/browser_parser.py</code><br><span class="badge badge-blue">Janhavi Dahiwale</span></td>
+                    <td><code>url</code>: string (Full URL)</td>
+                    <td>Parses URL query parameters to isolate search terms from Google, Bing, YouTube.</td>
+                </tr>
+                <tr>
+                    <td><code>parse_sqlite_history(path)</code></td>
+                    <td><code>parsers/browser_parser.py</code><br><span class="badge badge-blue">Janhavi Dahiwale</span></td>
+                    <td><code>history_file_path</code>, <code>browser_name</code></td>
+                    <td>Safely clones SQLite DB, queries <code>urls</code> & <code>downloads</code>, and normalizes rows.</td>
+                </tr>
+                <tr>
+                    <td><code>parse_dns_cache_traces()</code></td>
+                    <td><code>parsers/incognito_parser.py</code><br><span class="badge badge-blue">Janhavi Dahiwale</span></td>
+                    <td><code>limit</code>: integer</td>
+                    <td>Extracts Incognito / InPrivate session traces from OS DNS resolver cache memory.</td>
+                </tr>
+                <tr>
+                    <td><code>get_file_type_category(filename)</code></td>
+                    <td><code>parsers/app_parser.py</code><br><span class="badge badge-green">OM Nalawade</span></td>
+                    <td><code>filename</code>: string</td>
+                    <td>Classifies file extensions into Document, Code, Executable, or Media categories.</td>
+                </tr>
+                <tr>
+                    <td><code>parse_windows_recent_artifacts()</code></td>
+                    <td><code>parsers/app_parser.py</code><br><span class="badge badge-green">OM Nalawade</span></td>
+                    <td><code>limit</code>: integer</td>
+                    <td>Scans <code>%APPDATA%\Microsoft\Windows\Recent</code> and extracts modified timestamps.</td>
+                </tr>
+                <tr>
+                    <td><code>generate_forensic_case_artifacts()</code></td>
+                    <td><code>parsers/sample_generator.py</code><br><span class="badge badge-green">OM & Tanishq</span></td>
+                    <td>None</td>
+                    <td>Synthesizes 16 interconnected forensic events modeling an incident case study.</td>
+                </tr>
+                <tr>
+                    <td><code>filter_artifacts(...)</code></td>
+                    <td><code>core/timeline_engine.py</code><br><span class="badge badge-amber">OM Nalawade</span></td>
+                    <td><code>query</code>, <code>category</code>, <code>source</code>, <code>date_filter</code></td>
+                    <td>Performs in-memory multi-attribute filtering across search queries and date presets.</td>
+                </tr>
+                <tr>
+                    <td><code>compute_statistics()</code></td>
+                    <td><code>core/timeline_engine.py</code><br><span class="badge badge-amber">OM Nalawade</span></td>
+                    <td>None (uses active artifacts)</td>
+                    <td>Computes 24-hour activity histograms, category counts, and top 8 domains.</td>
+                </tr>
+                <tr>
+                    <td><code>export_to_csv(artifacts, path)</code></td>
+                    <td><code>core/report_exporter.py</code><br><span class="badge badge-blue">Ayush Warudkar</span></td>
+                    <td><code>artifacts</code>: list, <code>filepath</code>: str</td>
+                    <td>Writes standardized timeline records to standard CSV files via Python <code>csv</code>.</td>
+                </tr>
+                <tr>
+                    <td><code>export_to_html(artifacts, stats)</code></td>
+                    <td><code>core/report_exporter.py</code><br><span class="badge badge-blue">Ayush Warudkar</span></td>
+                    <td><code>artifacts</code>, <code>stats</code>, <code>filepath</code></td>
+                    <td>Generates styled executive forensic HTML report with cards and color-coded table.</td>
+                </tr>
+                <tr>
+                    <td><code>show_analytics_window(parent, stats)</code></td>
+                    <td><code>gui/analytics_view.py</code><br><span class="badge badge-blue">Ayush Warudkar</span></td>
+                    <td><code>parent</code>: Tk window, <code>stats</code></td>
+                    <td>Embeds Matplotlib Figure with 3 subplots into Tkinter using <code>FigureCanvasTkAgg</code>.</td>
+                </tr>
+                <tr>
+                    <td><code>show_about_dialog(parent)</code></td>
+                    <td><code>gui/about_dialog.py</code><br><span class="badge badge-amber">Tanishq Gunjal</span></td>
+                    <td><code>parent</code>: Tk window</td>
+                    <td>Displays group members, PRNs, and institutional project credentials.</td>
+                </tr>
+                <tr>
+                    <td><code>populate_table(artifacts)</code></td>
+                    <td><code>gui/app_window.py</code><br><span class="badge badge-amber">Tanishq Gunjal</span></td>
+                    <td><code>artifacts</code>: list</td>
+                    <td>Clears and populates <code>ttk.Treeview</code> rows with alternating tag colors.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- DELIVERABLE 4 -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-num">4</span> Data Preprocessing & Visualization Output
+        </div>
+        <p>
+            The visualization module translates correlated tabular records into high-level visual analytics embedded directly inside the desktop GUI via Matplotlib:
+        </p>
+
+        <div class="img-container">
+            <img src="data/analytics_chart.png" alt="Matplotlib Analytics Output">
+            <div class="img-caption">Figure 1.1: Multi-Chart Visualization Output generated by TraceLens Visual Analytics Engine</div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Visualization Component</th>
+                    <th>Chart / Rendering Type</th>
+                    <th>Analytical Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Temporal Distribution</strong></td>
+                    <td>24-Hour Bar Histogram (00:00 to 23:00)</td>
+                    <td>Highlights peak workstation usage hours and pinpoints suspicious off-hours activities.</td>
+                </tr>
+                <tr>
+                    <td><strong>Category Proportions</strong></td>
+                    <td>Proportional Pie Chart</td>
+                    <td>Illustrates behavioral balance between Web Browsing, Web Searches, and File Downloads.</td>
+                </tr>
+                <tr>
+                    <td><strong>Domain Ranking</strong></td>
+                    <td>Horizontal Bar Chart</td>
+                    <td>Identifies top frequented external web destinations and potential outbound data sinks.</td>
+                </tr>
+                <tr>
+                    <td><strong>Executive Audit Report</strong></td>
+                    <td>Styled HTML / CSS Document</td>
+                    <td>Provides printable summary cards, frequency tables, and color-coded chronological timelines.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
